@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import { CohereClient } from 'cohere-ai';
+import Groq from 'groq-sdk';
 import { logger } from '../../utils/logger';
 
 export interface LLMMessage {
@@ -18,7 +19,7 @@ export interface LLMResponse {
 }
 
 export interface LLMProviderConfig {
-  provider: 'openai' | 'anthropic' | 'cohere';
+  provider: 'openai' | 'anthropic' | 'cohere' | 'groq';
   model: string;
   apiKey: string;
   temperature?: number;
@@ -178,6 +179,45 @@ export class CohereProvider extends LLMProvider {
   }
 }
 
+export class GroqProvider extends LLMProvider {
+  private client: Groq;
+
+  constructor(config: LLMProviderConfig) {
+    super(config);
+    this.client = new Groq({ apiKey: config.apiKey });
+  }
+
+  async chat(messages: LLMMessage[]): Promise<LLMResponse> {
+    try {
+      const response = await this.client.chat.completions.create({
+        model: this.config.model || 'llama-3.1-70b-versatile',
+        messages: messages,
+        temperature: this.config.temperature || 0.7,
+        max_tokens: this.config.maxTokens || 2000
+      });
+
+      return {
+        content: response.choices[0].message.content || '',
+        usage: {
+          promptTokens: response.usage?.prompt_tokens || 0,
+          completionTokens: response.usage?.completion_tokens || 0,
+          totalTokens: response.usage?.total_tokens || 0
+        }
+      };
+    } catch (error) {
+      logger.error('Groq API error', { error });
+      throw new Error(`Groq API error: ${error}`);
+    }
+  }
+
+  async embed(text: string): Promise<number[]> {
+    // Groq doesn't provide embeddings yet
+    // Fallback to a simple approach or throw error
+    logger.warn('Groq does not support embeddings. Consider using OpenAI or Cohere for memory features.');
+    throw new Error('Groq does not support embeddings. Please use OpenAI or Cohere.');
+  }
+}
+
 // Factory function
 export function createLLMProvider(config: LLMProviderConfig): LLMProvider {
   switch (config.provider) {
@@ -187,6 +227,8 @@ export function createLLMProvider(config: LLMProviderConfig): LLMProvider {
       return new AnthropicProvider(config);
     case 'cohere':
       return new CohereProvider(config);
+    case 'groq':
+      return new GroqProvider(config);
     default:
       throw new Error(`Unsupported LLM provider: ${config.provider}`);
   }

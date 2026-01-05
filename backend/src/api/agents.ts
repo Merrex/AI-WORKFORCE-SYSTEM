@@ -89,10 +89,26 @@ agentsRouter.post('/:id/chat', async (req: AuthRequest, res, next) => {
 
     // Initialize LLM provider (user's API key should be stored securely)
     // For now, using environment variable
+    const provider = (process.env.DEFAULT_LLM_PROVIDER as any) || 'openai';
+    const model = process.env.DEFAULT_LLM_MODEL || 'gpt-4';
+    
+    // Get the appropriate API key based on provider
+    const apiKeyMap: Record<string, string | undefined> = {
+      openai: process.env.OPENAI_API_KEY,
+      anthropic: process.env.ANTHROPIC_API_KEY,
+      cohere: process.env.COHERE_API_KEY,
+      groq: process.env.GROQ_API_KEY
+    };
+    
+    const apiKey = apiKeyMap[provider];
+    if (!apiKey) {
+      throw new AppError(`API key not configured for provider: ${provider}`, 500);
+    }
+    
     const llmProvider = createLLMProvider({
-      provider: (process.env.DEFAULT_LLM_PROVIDER as any) || 'openai',
-      model: process.env.DEFAULT_LLM_MODEL || 'gpt-4',
-      apiKey: process.env.OPENAI_API_KEY!
+      provider,
+      model,
+      apiKey
     });
 
     // Create agent instance using factory

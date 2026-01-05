@@ -1,0 +1,50 @@
+{
+  "organization": {
+    "name": "REPLACE_WITH_YOUR_COMPANY_NAME",
+    "manifesto": {
+      "priorities": [
+        "REPLACE_WITH_PRIORITY_1",
+        "REPLACE_WITH_PRIORITY_2",
+        "REPLACE_WITH_PRIORITY_3"
+      ],
+      "values": [
+        "REPLACE_WITH_VALUE_1",
+        "REPLACE_WITH_VALUE_2"
+      ],
+      "stage": "REPLACE_WITH_STAGE (e.g., Seed, Series A, Growth)",
+      "industry": "REPLACE_WITH_INDUSTRY"
+    }
+  },
+  "adminUser": {
+    "email": "admin@example.com",
+    "password": "ChangeThisPassword123!",
+    "name": "Admin User"
+  },
+  "agents": [
+    {
+      "role": "ceo",
+      "name": "Executive AI Assistant",
+      "authorityLevel": "high"
+    },
+    {
+      "role": "cfo",
+      "name": "Finance AI Assistant",
+      "authorityLevel": "medium"
+    },
+    {
+      "role": "hr",
+      "name": "HR AI Assistant",
+      "authorityLevel": "medium"
+    },
+    {
+      "role": "sales",
+      "name": "Sales AI Assistant",
+      "authorityLevel": "low"
+    },
+    {
+      "role": "support",
+      "name": "Customer Support AI",
+      "authorityLevel": "low"
+    }
+  ]
+}

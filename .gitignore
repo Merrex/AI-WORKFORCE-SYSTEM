@@ -52,3 +52,7 @@ temp/
 
 # Warp AI configuration
 WARP.md
+
+# Seed data (keep templates, ignore actual data)
+backend/src/database/seeds/data/*.json
+!backend/src/database/seeds/data/*.json.example
